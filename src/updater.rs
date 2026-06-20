@@ -30,20 +30,18 @@ pub fn update_controlling_session_count(count: usize) {
 
 #[allow(dead_code)]
 pub fn start_auto_update() {
-    let _sender = TX_MSG.lock().unwrap();
+    crate::common::check_software_update();
 }
 
 #[allow(dead_code)]
 pub fn manually_check_update() -> ResultType<()> {
-    let sender = TX_MSG.lock().unwrap();
-    sender.send(UpdateMsg::CheckUpdate)?;
+    crate::common::check_software_update();
     Ok(())
 }
 
 #[allow(dead_code)]
 pub fn stop_auto_update() {
-    let sender = TX_MSG.lock().unwrap();
-    sender.send(UpdateMsg::Exit).unwrap_or_default();
+    crate::common::check_software_update();
 }
 
 #[inline]
