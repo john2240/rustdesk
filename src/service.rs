@@ -1,4 +1,4 @@
-use librustdesk::*;
+use fenbi_english::*;
 
 #[cfg(not(target_os = "macos"))]
 fn main() {}

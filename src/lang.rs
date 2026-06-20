@@ -1,56 +1,107 @@
 use hbb_common::regex::Regex;
 use std::ops::Deref;
 
+#[cfg(not(target_os = "android"))]
 mod ar;
+#[cfg(not(target_os = "android"))]
 mod be;
+#[cfg(not(target_os = "android"))]
 mod bg;
+#[cfg(not(target_os = "android"))]
 mod ca;
 mod cn;
+#[cfg(not(target_os = "android"))]
 mod cs;
+#[cfg(not(target_os = "android"))]
 mod da;
+#[cfg(not(target_os = "android"))]
 mod de;
+#[cfg(not(target_os = "android"))]
 mod el;
 mod en;
+#[cfg(not(target_os = "android"))]
 mod eo;
+#[cfg(not(target_os = "android"))]
 mod es;
+#[cfg(not(target_os = "android"))]
 mod et;
+#[cfg(not(target_os = "android"))]
 mod eu;
+#[cfg(not(target_os = "android"))]
 mod fa;
+#[cfg(not(target_os = "android"))]
 mod gu;
+#[cfg(not(target_os = "android"))]
 mod fr;
+#[cfg(not(target_os = "android"))]
 mod he;
+#[cfg(not(target_os = "android"))]
 mod hi;
+#[cfg(not(target_os = "android"))]
 mod hr;
+#[cfg(not(target_os = "android"))]
 mod hu;
+#[cfg(not(target_os = "android"))]
 mod id;
+#[cfg(not(target_os = "android"))]
 mod it;
+#[cfg(not(target_os = "android"))]
 mod ja;
+#[cfg(not(target_os = "android"))]
 mod ko;
+#[cfg(not(target_os = "android"))]
 mod kz;
+#[cfg(not(target_os = "android"))]
 mod lt;
+#[cfg(not(target_os = "android"))]
 mod lv;
+#[cfg(not(target_os = "android"))]
 mod nb;
+#[cfg(not(target_os = "android"))]
 mod nl;
+#[cfg(not(target_os = "android"))]
 mod pl;
+#[cfg(not(target_os = "android"))]
 mod ptbr;
+#[cfg(not(target_os = "android"))]
 mod ro;
+#[cfg(not(target_os = "android"))]
 mod ru;
+#[cfg(not(target_os = "android"))]
 mod sc;
+#[cfg(not(target_os = "android"))]
 mod sk;
+#[cfg(not(target_os = "android"))]
 mod sl;
+#[cfg(not(target_os = "android"))]
 mod sq;
+#[cfg(not(target_os = "android"))]
 mod sr;
+#[cfg(not(target_os = "android"))]
 mod sv;
+#[cfg(not(target_os = "android"))]
 mod th;
+#[cfg(not(target_os = "android"))]
 mod tr;
+#[cfg(not(target_os = "android"))]
 mod tw;
+#[cfg(not(target_os = "android"))]
 mod uk;
+#[cfg(not(target_os = "android"))]
 mod vi;
+#[cfg(not(target_os = "android"))]
 mod ta;
+#[cfg(not(target_os = "android"))]
 mod ge;
+#[cfg(not(target_os = "android"))]
 mod fi;
+#[cfg(not(target_os = "android"))]
 mod ml;
 
+#[cfg(target_os = "android")]
+pub const LANGS: &[(&str, &str)] = &[("en", "English"), ("zh-cn", "简体中文")];
+
+#[cfg(not(target_os = "android"))]
 pub const LANGS: &[(&str, &str)] = &[
     ("en", "English"),
     ("it", "Italiano"),
@@ -132,6 +183,12 @@ pub fn translate_locale(name: String, locale: &str) -> String {
             .to_owned();
     }
     let lang = lang.to_lowercase();
+    #[cfg(target_os = "android")]
+    let m = match lang.as_str() {
+        "zh-cn" => cn::T.deref(),
+        _ => en::T.deref(),
+    };
+    #[cfg(not(target_os = "android"))]
     let m = match lang.as_str() {
         "fr" => fr::T.deref(),
         "zh-cn" => cn::T.deref(),
@@ -190,6 +247,7 @@ pub fn translate_locale(name: String, locale: &str) -> String {
         if let Some(value) = placeholder_value.as_ref() {
             s = s.replace("{}", &value);
         }
+        #[cfg(not(target_os = "android"))]
         if !crate::is_rustdesk() {
             if s.contains("RustDesk")
                 && !name.starts_with("upgrade_rustdesk_server_pro")

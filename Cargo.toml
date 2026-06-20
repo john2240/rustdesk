@@ -1,15 +1,15 @@
 [package]
-name = "rustdesk"
+name = "fenbi-english"
 version = "1.4.8"
-authors = ["rustdesk <info@rustdesk.com>"]
+authors = ["Fenbi English"]
 edition = "2021"
 build= "build.rs"
-description = "RustDesk Remote Desktop"
-default-run = "rustdesk"
+description = "Fenbi English Remote Desktop"
+default-run = "fenbi-english"
 rust-version = "1.75"
 
 [lib]
-name = "librustdesk"
+name = "fenbi_english"
 crate-type = ["cdylib", "staticlib", "rlib"]
 
 [[bin]]

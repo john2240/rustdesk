@@ -7269,7 +7269,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "rustdesk"
+name = "fenbi-english"
 version = "1.4.8"
 dependencies = [
  "android-wakelock",

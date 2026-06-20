@@ -9,7 +9,7 @@ import com.fenbi.english.RdClipboardManager
 
 object FFI {
     init {
-        System.loadLibrary("rustdesk")
+        System.loadLibrary("fenbi_english")
     }
 
     external fun init(ctx: Context)

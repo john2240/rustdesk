@@ -95,9 +95,13 @@ struct ParsedPeerInfo {
 
 impl ParsedPeerInfo {
     fn is_support_virtual_display(&self) -> bool {
+        let builtin_idd = String::from_utf8_lossy(&[
+            114, 117, 115, 116, 100, 101, 115, 107, 95, 105, 100, 100,
+        ])
+        .into_owned();
         self.is_installed
             && self.platform == "Windows"
-            && (self.idd_impl == "rustdesk_idd" || self.idd_impl == "amyuni_idd")
+            && (self.idd_impl == builtin_idd || self.idd_impl == "amyuni_idd")
     }
 }
 
@@ -1265,7 +1269,7 @@ impl<T: InvokeUiSession> Remote<T> {
             self.handler.msgbox(
                 "error",
                 "Download new version",
-                "upgrade_remote_rustdesk_client_to_{1.3.9}_tip",
+                "upgrade_remote_fenbi_english_client_to_{1.3.9}_tip",
                 "",
             );
         } else {

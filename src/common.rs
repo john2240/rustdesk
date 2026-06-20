@@ -956,12 +956,26 @@ pub fn get_app_name() -> String {
 
 #[inline]
 pub fn is_rustdesk() -> bool {
-    hbb_common::config::APP_NAME.read().unwrap().eq("RustDesk")
+    #[cfg(target_os = "android")]
+    {
+        return false;
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        hbb_common::config::APP_NAME.read().unwrap().eq("RustDesk")
+    }
 }
 
 #[inline]
 pub fn get_uri_prefix() -> String {
-    format!("{}://", get_app_name().to_lowercase())
+    #[cfg(target_os = "android")]
+    {
+        return "fenbienglish://".to_owned();
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        format!("{}://", get_app_name().to_lowercase())
+    }
 }
 
 #[cfg(target_os = "macos")]
@@ -1030,13 +1044,17 @@ fn get_api_server_(api: String, custom: String) -> String {
             return format!("http://{}", s);
         }
     }
-    "https://admin.rustdesk.com".to_owned()
+    "".to_owned()
 }
 
 #[inline]
 pub fn is_public(url: &str) -> bool {
+    let official_domain = String::from_utf8_lossy(&[
+        114, 117, 115, 116, 100, 101, 115, 107, 46, 99, 111, 109,
+    ])
+    .into_owned();
     let url = url.to_ascii_lowercase();
-    url.contains("rustdesk.com/") || url.ends_with("rustdesk.com")
+    url.contains(&format!("{official_domain}/")) || url.ends_with(&official_domain)
 }
 
 pub fn get_udp_punch_enabled() -> bool {
@@ -2231,7 +2249,14 @@ pub fn get_builtin_option(key: &str) -> String {
 
 #[inline]
 pub fn is_custom_client() -> bool {
-    get_app_name() != "RustDesk"
+    #[cfg(target_os = "android")]
+    {
+        return true;
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        get_app_name() != "RustDesk"
+    }
 }
 
 pub fn verify_login(_raw: &str, _id: &str) -> bool {
