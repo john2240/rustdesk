@@ -104,20 +104,34 @@ impl RendezvousMediator {
     }
 
     pub async fn start_all() {
-        crate::test_nat_type();
+        #[cfg(target_os = "android")]
+        let skip_public_server = crate::common::using_public_server();
+        #[cfg(not(target_os = "android"))]
+        let skip_public_server = false;
+
+        if skip_public_server {
+            Config::set_option("stop-service".into(), "Y".into());
+            log::info!("No custom rendezvous server configured; skip public server startup");
+        } else {
+            crate::test_nat_type();
+        }
         if config::is_outgoing_only() {
             loop {
                 sleep(1.).await;
             }
         }
-        crate::hbbs_http::sync::start();
+        if !skip_public_server {
+            crate::hbbs_http::sync::start();
+        }
         #[cfg(target_os = "windows")]
         if crate::platform::is_installed() && crate::is_server() {
             crate::updater::start_auto_update();
         }
         check_zombie();
         let server = new_server();
-        if config::option2bool("stop-service", &Config::get_option("stop-service")) {
+        if config::option2bool("stop-service", &Config::get_option("stop-service"))
+            && !skip_public_server
+        {
             crate::test_rendezvous_server();
         }
         let server_cloned = server.clone();
@@ -141,6 +155,14 @@ impl RendezvousMediator {
         scrap::codec::test_av1();
         *LAST_NOT_DEPLOYED_REGISTER.lock().await = None;
         loop {
+            #[cfg(target_os = "android")]
+            if crate::common::using_public_server() {
+                Config::set_option("stop-service".into(), "Y".into());
+                server.write().unwrap().close_connections();
+                Config::reset_online();
+                sleep(1.).await;
+                continue;
+            }
             let timeout = Arc::new(RwLock::new(CONNECT_TIMEOUT));
             let conn_start_time = Instant::now();
             *SOLVING_PK_MISMATCH.lock().await = "".to_owned();

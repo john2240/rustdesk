@@ -37,6 +37,17 @@ lazy_static::lazy_static! {
     static ref TEXTURE_RENDER_KEY: Arc<AtomicI32> = Arc::new(AtomicI32::new(0));
 }
 
+#[cfg(target_os = "android")]
+fn prevent_public_server_startup() -> bool {
+    if crate::common::using_public_server() {
+        config::Config::set_option("stop-service".into(), "Y".into());
+        log::info!("No custom rendezvous server configured; keep Android service stopped");
+        true
+    } else {
+        false
+    }
+}
+
 fn initialize(app_dir: &str, custom_client_config: &str) {
     flutter::async_tasks::start_flutter_async_runner();
     // `APP_DIR` is set in `main_get_data_dir_ios()` on iOS.
@@ -63,8 +74,10 @@ fn initialize(app_dir: &str, custom_client_config: &str) {
         hbb_common::init_log(false, "");
         #[cfg(feature = "mediacodec")]
         scrap::mediacodec::check_mediacodec();
-        crate::common::test_rendezvous_server();
-        crate::common::test_nat_type();
+        if !prevent_public_server_startup() {
+            crate::common::test_rendezvous_server();
+            crate::common::test_nat_type();
+        }
     }
     #[cfg(target_os = "ios")]
     {
@@ -3073,6 +3086,9 @@ pub mod server_side {
     #[no_mangle]
     pub unsafe extern "system" fn Java_ffi_FFI_startService(_env: JNIEnv, _class: JClass) {
         log::debug!("startService from jvm");
+        if super::prevent_public_server_startup() {
+            return;
+        }
         config::Config::set_option("stop-service".into(), "".into());
         crate::rendezvous_mediator::reset_needs_deploy_notification();
         crate::rendezvous_mediator::RendezvousMediator::restart();
