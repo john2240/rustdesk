@@ -352,6 +352,7 @@ prebuild)
 		flutter_rust_bridge_codegen \
 			--rust-input ./src/flutter_ffi.rs \
 			--dart-output ./flutter/lib/generated_bridge.dart \
+			--class-name Rustdesk \
 			--llvm-path "${BRIDGE_LLVM_PATH}"
 
 		# Add bridge files to save-list

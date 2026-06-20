@@ -279,11 +279,11 @@ class ToolbarState {
 
     try {
       // Load both states in parallel for better performance
-      final results = await Future.wait([
-        bind.sessionGetToggleOption(
-            sessionId: sessionId, arg: kOptionCollapseToolbar),
-        bind.sessionGetToggleOption(
-            sessionId: sessionId, arg: kOptionHideToolbar),
+      final results = await Future.wait<bool?>([
+        Future<bool?>.value(bind.sessionGetToggleOption(
+            sessionId: sessionId, arg: kOptionCollapseToolbar)),
+        Future<bool?>.value(bind.sessionGetToggleOption(
+            sessionId: sessionId, arg: kOptionHideToolbar)),
       ]);
 
       collapse.value = results[0] ?? false;

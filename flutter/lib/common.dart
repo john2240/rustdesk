@@ -1733,8 +1733,8 @@ class LastWindowPosition {
     return jsonEncode(toJson());
   }
 
-  static LastWindowPosition? loadFromString(String content) {
-    if (content.isEmpty) {
+  static LastWindowPosition? loadFromString(String? content) {
+    if (content == null || content.isEmpty) {
       return null;
     }
     try {
