@@ -1,4 +1,4 @@
-package com.carriez.flutter_hbb
+package com.fenbi.english
 
 /**
  * Handle events from flutter

@@ -10,8 +10,11 @@ plugins {
 
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file('key.properties')
+def fallbackKeystorePropertiesFile = rootProject.file('fenbi_english_key.properties')
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+} else if (fallbackKeystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(fallbackKeystorePropertiesFile))
 }
 
 def localProperties = new Properties()
@@ -30,6 +33,17 @@ if (flutterVersionCode == null) {
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
     flutterVersionName = '1.0'
+}
+
+def resolveKeystoreFile = { storeFilePath ->
+    if (storeFilePath == null || storeFilePath.toString().trim().isEmpty()) {
+        return null
+    }
+    def appRelativeFile = file(storeFilePath)
+    if (appRelativeFile.exists()) {
+        return appRelativeFile
+    }
+    return rootProject.file(storeFilePath)
 }
 
 // Add rustls-platform-verifier Android support
@@ -97,7 +111,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.carriez.flutter_hbb"
+        applicationId "com.fenbi.english"
         minSdkVersion 22
         targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
@@ -108,7 +122,7 @@ android {
       release {
         keyAlias keystoreProperties['keyAlias']
         keyPassword keystoreProperties['keyPassword']
-        storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+        storeFile resolveKeystoreFile(keystoreProperties['storeFile'])
         storePassword keystoreProperties['storePassword']
       }
     }
